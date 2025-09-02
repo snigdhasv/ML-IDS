@@ -16,6 +16,7 @@ from datetime import datetime
 import argparse
 import logging
 import shutil
+from pathlib import Path
 
 # Setup logging
 logging.basicConfig(
@@ -26,18 +27,26 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger("TrafficPipeline")
+logger = logging.getLogger("TrafficPipelineLinux")
 
 class NetworkTrafficPipeline:
     def __init__(self, config=None):
-        self.config = config or {
-            "dpdk_path": "/usr/local/share/dpdk",
-            "suricata_path": "/usr/bin/suricata",
+        # Defaults for Linux + DPDK + Suricata
+        self.config = {
+            # Paths
             "output_dir": "./output",
-            "simulation_time": 300,  # seconds
-            "traffic_profile": "mixed",  # options: normal, dos, ddos, portscan, bruteforce, etc.
-            "packet_rate": 10000,  # packets per second
-            "interface": "eth0",
+            "suricata_binary": "/usr/bin/suricata",
+            "suricata_yaml": "./suricata-dpdk.yaml",  # provide template below
+            "pktgen_dir": "/usr/local/src/pktgen-dpdk",  # adjust where Pktgen is installed
+            "pktgen_lua": "./pktgen.lua",               # template below (pcap or synthetic)
+            # DPDK/PCI setup
+            "dpdk_bind": True,       # bind NICs to vfio-pci if needed
+            "pci_devs": ["0000:03:00.0", "0000:03:00.1"],  # update to your NICs
+            "hugepages_2MB": 2048,
+            # Runtime
+            "simulation_time": 60,
+            "traffic_profile": "mixed",  # normal, dos, ddos, mixed (used for labeling)
+            # Feature selection (unchanged)
             "features_to_extract": [
                 'Destination Port', 'Flow Duration', 'Total Fwd Packets', 'Total Backward Packets',
                 'Total Length of Fwd Packets', 'Total Length of Bwd Packets', 'Fwd Packet Length Max',
@@ -46,369 +55,204 @@ class NetworkTrafficPipeline:
                 'Bwd Packet Length Std', 'Flow Bytes/s', 'Flow Packets/s', 'Flow IAT Mean',
                 'Flow IAT Std', 'Flow IAT Max', 'Flow IAT Min', 'Fwd IAT Total', 'Fwd IAT Mean',
                 'Fwd IAT Std', 'Fwd IAT Max', 'Fwd IAT Min', 'Bwd IAT Total', 'Bwd IAT Mean',
-                'Bwd IAT Std', 'Bwd IAT Max', 'Bwd IAT Min', 'Fwd PSH Flags', 'Fwd URG Flags', 
-                'Fwd Header Length', 'Bwd Header Length', 'Fwd Packets/s',
-                'Bwd Packets/s', 'Min Packet Length', 'Max Packet Length', 'Packet Length Mean',
-                'Packet Length Std', 'Packet Length Variance', 'FIN Flag Count', 'RST Flag Count',
-                'PSH Flag Count', 'ACK Flag Count', 'URG Flag Count', 'ECE Flag Count',
-                'Down/Up Ratio', 'Average Packet Size', 'Avg Fwd Segment Size', 'Avg Bwd Segment Size',
+                'Bwd IAT Std', 'Bwd IAT Max', 'Bwd IAT Min', 'Fwd PSH Flags', 'Fwd URG Flags',
+                'Fwd Header Length', 'Bwd Header Length', 'Fwd Packets/s', 'Bwd Packets/s',
+                'Min Packet Length', 'Max Packet Length', 'Packet Length Mean', 'Packet Length Std',
+                'Packet Length Variance', 'FIN Flag Count', 'RST Flag Count', 'PSH Flag Count',
+                'ACK Flag Count', 'URG Flag Count', 'ECE Flag Count', 'Down/Up Ratio',
+                'Average Packet Size', 'Avg Fwd Segment Size', 'Avg Bwd Segment Size',
                 'Subflow Fwd Bytes', 'Subflow Bwd Bytes', 'Init_Win_bytes_forward',
                 'Init_Win_bytes_backward', 'act_data_pkt_fwd', 'min_seg_size_forward',
                 'Active Mean', 'Active Std', 'Active Max', 'Active Min', 'Idle Mean',
                 'Idle Std', 'Idle Max', 'Idle Min'
             ]
         }
-        
-        # Create output directory if it doesn't exist
-        os.makedirs(self.config["output_dir"], exist_ok=True)
-        
-        # Check if we're running in WSL
-        self._check_wsl()
-        
-        # Verify DPDK and Suricata are installed
-        self._verify_dependencies()
+        if config:
+            self.config.update(config)
 
-    def _check_wsl(self):
-        """Verify we're running in WSL and adjust settings if needed"""
-        try:
-            with open('/proc/version', 'r') as f:
-                if 'Microsoft' in f.read():
-                    logger.info("Running in WSL environment")
-                    
-                    # Check if WSL2 (recommended for DPDK)
-                    result = subprocess.run(['wsl.exe', '--version'], 
-                                            capture_output=True, text=True)
-                    if 'WSL version' in result.stdout and '2' in result.stdout:
-                        logger.info("WSL2 detected (optimal for DPDK)")
-                    else:
-                        logger.warning("Consider upgrading to WSL2 for better DPDK performance")
-                        
-                    # Check if required WSL features are enabled
-                    self._setup_wsl_networking()
-                else:
-                    logger.info("Not running in WSL environment")
-        except Exception as e:
-            logger.warning(f"Could not verify WSL environment: {e}")
+        Path(self.config["output_dir"]).mkdir(parents=True, exist_ok=True)
 
-    def _setup_wsl_networking(self):
-        """Configure WSL networking for DPDK"""
-        # Check for network interfaces
-        try:
-            result = subprocess.run(['ip', 'link', 'show'], 
-                                    capture_output=True, text=True)
-            if result.returncode == 0:
-                logger.info("Network interfaces available in WSL")
-            else:
-                logger.error("Cannot access network interfaces in WSL")
-                
-            # Check for Huge Pages support (required by DPDK)
-            if not os.path.exists('/dev/hugepages'):
-                logger.warning("Huge Pages not mounted, attempting to set up")
-                try:
-                    subprocess.run(['sudo', 'mkdir', '-p', '/dev/hugepages'])
-                    subprocess.run(['sudo', 'mount', '-t', 'hugetlbfs', 'nodev', '/dev/hugepages'])
-                    logger.info("Huge Pages mounted successfully")
-                except Exception as e:
-                    logger.error(f"Failed to mount Huge Pages: {e}")
-            else:
-                logger.info("Huge Pages support detected")
-        except Exception as e:
-            logger.error(f"Error setting up WSL networking: {e}")
+        # Quick sanity checks
+        self._verify_binaries()
+        if self.config.get("dpdk_bind", True):
+            self._setup_hugepages()
+            self._bind_pci_to_vfio()
 
-    def _verify_dependencies(self):
-        """Verify that DPDK and Suricata are properly installed"""
-        logger.info("DPDK and Suricata are already installed, skipping dependency checks")
-        
-        # Update Suricata rules
+    def _run(self, cmd, check=True, **popen_kwargs):
+        logger.info("CMD: %s", " ".join(cmd))
+        return subprocess.run(cmd, check=check, **popen_kwargs)
+
+    def _verify_binaries(self):
+        if not os.path.exists(self.config["suricata_binary"]):
+            raise FileNotFoundError(f"Suricata not found at {self.config['suricata_binary']}")
+        if not os.path.isdir(self.config["pktgen_dir"]):
+            raise FileNotFoundError(f"Pktgen-DPDK dir not found: {self.config['pktgen_dir']}")
+        if not os.path.exists(self.config["suricata_yaml"]):
+            raise FileNotFoundError(f"Suricata YAML not found: {self.config['suricata_yaml']}")
+        if not os.path.exists(self.config["pktgen_lua"]):
+            raise FileNotFoundError(f"Pktgen Lua script not found: {self.config['pktgen_lua']}")
+
+    def _setup_hugepages(self):
+        hp = str(self.config["hugepages_2MB"])
         try:
-            subprocess.run(['sudo', 'suricata-update'], check=True)
-            logger.info("Suricata rules updated successfully")
+            self._run(["sudo", "sh", "-c",
+                       f"echo {hp} > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages"])
         except subprocess.CalledProcessError:
-            logger.warning("Failed to update Suricata rules. Continuing with existing rules.")
+            logger.warning("Failed to set hugepages; ensure you have privileges.")
 
-    def setup_dpdk(self):
-        """Set up DPDK environment for packet processing"""
-        logger.info("Setting up DPDK environment")
-        
+        Path("/dev/hugepages").mkdir(exist_ok=True)
         try:
-            # Allocate hugepages (required for DPDK)
-            subprocess.run(['sudo', 'sh', '-c', 'echo 1024 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages'], 
-                           check=True)
-            
-            # Bind NIC to DPDK-compatible driver
-            # For WSL, we can use veth or similar virtual interfaces
-            subprocess.run(['sudo', 'dpdk-devbind', '--status'], check=True)
-            
-            # Depending on WSL version and setup, bind appropriate interface
-            # This part may need customization based on specific WSL setup
-            interface = self.config["interface"]
-            logger.info(f"Attempting to bind interface {interface} to DPDK driver")
-            
-            # For WSL2, we may need to use different approach than direct binding
-            # Often using AF_XDP or similar approaches works better in WSL
-            
-            logger.info("DPDK environment setup complete")
-            return True
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Failed to set up DPDK environment: {e}")
-            return False
+            self._run(["sudo", "mount", "-t", "hugetlbfs", "nodev", "/dev/hugepages"], check=False)
+        except Exception:
+            pass  # already mounted
 
-    def generate_traffic(self, profile="mixed"):
-        """
-        Generate network traffic based on specified profile
-        
-        Parameters:
-        profile (str): Traffic profile to generate (normal, dos, ddos, etc.)
-        
-        Returns:
-        str: Path to the generated pcap file
-        """
-        logger.info(f"Generating {profile} traffic")
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_pcap = os.path.join(self.config["output_dir"], f"{profile}_traffic_{timestamp}.pcap")
-        
-        # Use DPDK-based packet generator
-        # For demonstration, we'll use a simpler approach
-        # In a real implementation, you'd integrate with a DPDK packet generator
-        
+    def _bind_pci_to_vfio(self):
+        # Requires vfio-pci kernel module loaded
         try:
-            if profile == "normal":
-                # Generate normal traffic
-                command = [
-                    "tcpreplay", "--intf1=" + self.config["interface"],
-                    "--topspeed", "--loop=10", 
-                    "/home/snig/CAPSTONE/pipeline/normal_traffic.pcap" #path
-                ]
-            elif profile == "dos":
-                # Generate DoS attack traffic
-                command = [
-                    "tcpreplay", "--intf1=" + self.config["interface"],
-                    "--topspeed", "--loop=10", 
-                    "/home/snig/CAPSTONE/pipeline/dos_traffic_sample.pcap" #path
-                ]
-            elif profile == "ddos":
-                # Generate DDoS attack traffic
-                command = [
-                    "tcpreplay", "--intf1=" + self.config["interface"],
-                    "--topspeed", "--loop=10", 
-                    "/home/snig/CAPSTONE/pipeline/dos_traffic_sample.pcap" #path
-                ]
-            else:
-                # Mixed traffic
-                command = [
-                    "tcpreplay", "--intf1=" + self.config["interface"],
-                    "--topspeed", "--loop=5", 
-                    "/home/snig/CAPSTONE/pipeline/mixed_traffic_sample.pcap" #path
-                ]
-                
-            # Capture traffic to pcap for analysis
-            capture_cmd = [
-                "tcpdump", "-i", self.config["interface"], 
-                "-w", output_pcap, "-s", "0"
-            ]
-            
-            # Start capture in background
-            capture_process = subprocess.Popen(capture_cmd)
-            
-            # Start traffic generation
-            subprocess.run(command, check=True, timeout=self.config["simulation_time"])
-            
-            # Stop capture
-            capture_process.terminate()
-            capture_process.wait(timeout=5)
-            
-            logger.info(f"Traffic generation complete, captured to {output_pcap}")
-            return output_pcap
-            
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Traffic generation failed: {e}")
-            return None
-        except FileNotFoundError:
-            logger.error("tcpreplay or tcpdump not found. Please install them.")
-            return None
-
-
-
-
-    def analyze_with_suricata(self, pcap_file):
-        """
-        Analyze captured traffic with Suricata
-        
-        Parameters:
-        pcap_file (str): Path to the pcap file to analyze
-        
-        Returns:
-        str: Path to the Suricata output directory
-        """
-        if not pcap_file or not os.path.exists(pcap_file):
-            logger.error("Invalid pcap file for Suricata analysis")
-            return None
-            
-        logger.info(f"Analyzing {pcap_file} with Suricata")
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_dir = os.path.join(self.config["output_dir"], f"suricata_output_{timestamp}")
-        os.makedirs(output_dir, exist_ok=True)
-        
-        # Prepare Suricata configuration
-        suricata_config = os.path.join(output_dir, "suricata.yaml")
-        
-        # Copy default config and customize
-        try:
-            default_config = "/etc/suricata/suricata.yaml"
-            shutil.copy(default_config, suricata_config)
-            
-            # Run Suricata on the pcap file
-            command = [
-                "suricata", "-c", suricata_config,
-                "-r", pcap_file,
-                "-l", output_dir,
-                "--runmode", "autofp"
-            ]
-            
-            subprocess.run(command, check=True)
-            
-            # Check if analysis was successful
-            eve_json = os.path.join(output_dir, "eve.json")
-            if os.path.exists(eve_json):
-                logger.info(f"Suricata analysis complete: {eve_json}")
-                return output_dir
-            else:
-                logger.error("Suricata analysis failed: no eve.json found")
-                return None
-                
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Suricata analysis failed: {e}")
-            return None
+            self._run(["sudo", "modprobe", "vfio-pci"], check=False)
+            for dev in self.config["pci_devs"]:
+                self._run(["sudo", "dpdk-devbind.py", "-u", dev], check=False)
+                self._run(["sudo", "dpdk-devbind.py", "-b", "vfio-pci", dev], check=False)
+            self._run(["sudo", "dpdk-devbind.py", "--status"], check=False)
         except Exception as e:
-            logger.error(f"Error during Suricata analysis: {e}")
+            logger.warning("DPDK bind step hit an issue: %s", e)
+
+    def _launch_suricata_dpdk(self, outdir):
+        """
+        Run Suricata in DPDK mode. Make sure suricata is built with DPDK and
+        suricata-dpdk.yaml contains a proper 'dpdk:' section for your NICs.
+        """
+        cmd = [
+            self.config["suricata_binary"],
+            "-c", self.config["suricata_yaml"],
+            "-l", outdir,
+            "--dpdk"
+        ]
+        logger.info("Launching Suricata-DPDK…")
+        return subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+    def _launch_pktgen(self):
+        """
+        Launch Pktgen-DPDK with a Lua script. The Lua script controls ports, rates, and optional PCAP replay.
+        """
+        # Typical EAL opts; adjust cores/sockets as needed
+        eal = [
+            "-l", "0-3",               # logical cores
+            "-n", "4",                 # memory channels
+            "--proc-type", "auto",
+            "--file-prefix", "pg"
+        ]
+        # Map NICs (PCI) to Pktgen ports via -w
+        for dev in self.config["pci_devs"]:
+            eal.extend(["-w", dev])
+
+        pktgen_bin = os.path.join(self.config["pktgen_dir"], "app/x86_64-native-linuxapp-gcc/pktgen")
+        if not os.path.exists(pktgen_bin):
+            # Alternative Meson path
+            pktgen_bin = os.path.join(self.config["pktgen_dir"], "builddir/app/pktgen")
+        if not os.path.exists(pktgen_bin):
+            raise FileNotFoundError("Pktgen binary not found. Build Pktgen and update pktgen_dir.")
+
+        cmd = [pktgen_bin, *eal, "--", "-T", "-P", "-m", "1.0,2.1", "-f", self.config["pktgen_lua"]]
+        logger.info("Launching Pktgen-DPDK…")
+        return subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+    def generate_and_analyze(self, profile="mixed"):
+        """
+        Start Suricata (DPDK), start Pktgen, run for simulation_time, stop both.
+        Returns path to Suricata output directory containing eve.json.
+        """
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        outdir = os.path.join(self.config["output_dir"], f"suricata_dpdk_{profile}_{timestamp}")
+        Path(outdir).mkdir(parents=True, exist_ok=True)
+
+        suri = self._launch_suricata_dpdk(outdir)
+        time.sleep(3)  # give Suricata a moment to init DPDK ports
+
+        pktgen = self._launch_pktgen()
+        logger.info("Traffic running via Pktgen; profile=%s", profile)
+
+        try:
+            time.sleep(self.config["simulation_time"])
+        finally:
+            # Stop pktgen first
+            if pktgen and pktgen.poll() is None:
+                pktgen.terminate()
+                try:
+                    pktgen.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pktgen.kill()
+
+            # Then Suricata
+            if suri and suri.poll() is None:
+                suri.terminate()
+                try:
+                    suri.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    suri.kill()
+
+        eve = os.path.join(outdir, "eve.json")
+        if not os.path.exists(eve):
+            logger.error("No eve.json generated; check Suricata logs/output.")
             return None
+
+        logger.info("Suricata eve.json at %s", eve)
+        return outdir
+
+    # --- Feature extraction (mostly your original logic, with a few safety fixes) ---
 
     def extract_features(self, suricata_output_dir):
-        """
-        Extract features from Suricata output compatible with CICIDS2017 dataset
-        
-        Parameters:
-        suricata_output_dir (str): Path to Suricata output directory
-        
-        Returns:
-        pd.DataFrame: DataFrame containing extracted features
-        """
         if not suricata_output_dir or not os.path.exists(suricata_output_dir):
             logger.error("Invalid Suricata output directory")
             return None
-            
-        logger.info(f"Extracting features from {suricata_output_dir}")
-        
-        # Path to Suricata's eve.json file
+
         eve_json = os.path.join(suricata_output_dir, "eve.json")
-        
         if not os.path.exists(eve_json):
-            logger.error(f"Eve.json not found in {suricata_output_dir}")
+            logger.error("eve.json not found in %s", suricata_output_dir)
             return None
-            
-        # Parse eve.json to extract flow information
-        try:
-            # Read eve.json line by line (it's not a single JSON object)
-            flows = []
-            with open(eve_json, 'r') as f:
-                for line in f:
-                    try:
-                        event = json.loads(line)
-                        if event.get('event_type') == 'flow':
-                            flows.append(event)
-                    except json.JSONDecodeError:
-                        continue
-            
-            if not flows:
-                logger.error("No flow data found in eve.json")
-                return None
-                
-            logger.info(f"Extracted {len(flows)} flows from Suricata output")
-            
-            # Convert to DataFrame
-            df = pd.json_normalize(flows)
-            
-            # Transform data to match CICIDS2017 features
-            features_df = self._transform_to_cicids_features(df)
-            
-            # Save features to CSV
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_csv = os.path.join(self.config["output_dir"], f"extracted_features_{timestamp}.csv")
-            features_df.to_csv(output_csv, index=False)
-            
-            logger.info(f"Features saved to {output_csv}")
-            return features_df
-            
-        except Exception as e:
-            logger.error(f"Feature extraction failed: {e}")
-            return None
+
+        flows = []
+        with open(eve_json, 'r') as f:
+            for line in f:
+                try:
+                    event = json.loads(line)
+                    if event.get('event_type') == 'flow':
+                        flows.append(event)
+                except json.JSONDecodeError:
+                    continue
+
+        if not flows:
+            logger.warning("No flow events found in eve.json")
+            return pd.DataFrame()
+
+        df = pd.json_normalize(flows)
+        return self._transform_to_cicids_features(df)
+
 
     def _transform_to_cicids_features(self, suricata_df):
-        """
-        Transform Suricata output into the specific features requested for CICIDS2017
-        
-        Parameters:
-        suricata_df (pd.DataFrame): DataFrame with Suricata flow data
-        
-        Returns:
-        pd.DataFrame: DataFrame with requested CICIDS2017-compatible features
-        """
-        logger.info("Transforming Suricata data to requested CICIDS2017 features")
-        
-        ordered_features = [
-            'Destination Port', 'Flow Duration', 'Total Fwd Packets', 'Total Backward Packets',
-            'Total Length of Fwd Packets', 'Total Length of Bwd Packets', 'Fwd Packet Length Max',
-            'Fwd Packet Length Min', 'Fwd Packet Length Mean', 'Fwd Packet Length Std',
-            'Bwd Packet Length Max', 'Bwd Packet Length Min', 'Bwd Packet Length Mean',
-            'Bwd Packet Length Std', 'Flow Bytes/s', 'Flow Packets/s', 'Flow IAT Mean',
-            'Flow IAT Std', 'Flow IAT Max', 'Flow IAT Min', 'Fwd IAT Total', 'Fwd IAT Mean',
-            'Fwd IAT Std', 'Fwd IAT Max', 'Fwd IAT Min', 'Bwd IAT Total', 'Bwd IAT Mean',
-            'Bwd IAT Std', 'Bwd IAT Max', 'Bwd IAT Min', 'Fwd PSH Flags',
-            'Fwd URG Flags', 'Fwd Header Length', 'Bwd Header Length', 'Fwd Packets/s',
-            'Bwd Packets/s', 'Min Packet Length', 'Max Packet Length', 'Packet Length Mean',
-            'Packet Length Std', 'Packet Length Variance', 'FIN Flag Count', 'RST Flag Count',
-            'PSH Flag Count', 'ACK Flag Count', 'URG Flag Count', 'ECE Flag Count',
-            'Down/Up Ratio', 'Average Packet Size', 'Avg Fwd Segment Size', 'Avg Bwd Segment Size',
-            'Subflow Fwd Bytes', 'Subflow Bwd Bytes', 'Init_Win_bytes_forward',
-            'Init_Win_bytes_backward', 'act_data_pkt_fwd', 'min_seg_size_forward',
-            'Active Mean', 'Active Std', 'Active Max', 'Active Min', 'Idle Mean',
-            'Idle Std', 'Idle Max', 'Idle Min'
-        ]
-        
-        features = pd.DataFrame(columns=ordered_features)
-        features = features.astype('float64')  # Set default type to avoid mixed types
-                
-        
-        try:
-            # Basic flow information
-            if 'dest_port' in suricata_df.columns:
-                features['Destination Port'] = suricata_df['dest_port']
+        ordered = self.config["features_to_extract"]
+        features = pd.DataFrame(columns=ordered).astype('float64')
 
-            # Flow duration calculation
+        try:
+            if 'dest_port' in suricata_df.columns:
+                features['Destination Port'] = pd.to_numeric(suricata_df['dest_port'], errors='coerce')
+
             if 'flow.start' in suricata_df.columns and 'flow.end' in suricata_df.columns:
-                # Convert timestamps to datetime objects
-                suricata_df['flow.start'] = pd.to_datetime(suricata_df['flow.start'])
-                suricata_df['flow.end'] = pd.to_datetime(suricata_df['flow.end'])
-                
-                # Calculate flow duration in microseconds
-                features['Flow Duration'] = (suricata_df['flow.end'] - suricata_df['flow.start']).dt.total_seconds() * 1000000
-            
-            # Packet counts
+                suricata_df['flow.start'] = pd.to_datetime(suricata_df['flow.start'], errors='coerce')
+                suricata_df['flow.end'] = pd.to_datetime(suricata_df['flow.end'], errors='coerce')
+                dur_us = (suricata_df['flow.end'] - suricata_df['flow.start']).dt.total_seconds() * 1_000_000
+                features['Flow Duration'] = dur_us
+
             if 'flow.pkts_toserver' in suricata_df.columns:
-                features['Total Fwd Packets'] = suricata_df['flow.pkts_toserver']
-            
+                features['Total Fwd Packets'] = pd.to_numeric(suricata_df['flow.pkts_toserver'], errors='coerce')
             if 'flow.pkts_toclient' in suricata_df.columns:
-                features['Total Backward Packets'] = suricata_df['flow.pkts_toclient']
-            
-            # Byte counts
+                features['Total Backward Packets'] = pd.to_numeric(suricata_df['flow.pkts_toclient'], errors='coerce')
+
             if 'flow.bytes_toserver' in suricata_df.columns:
-                features['Total Length of Fwd Packets'] = suricata_df['flow.bytes_toserver']
-            
+                features['Total Length of Fwd Packets'] = pd.to_numeric(suricata_df['flow.bytes_toserver'], errors='coerce')
             if 'flow.bytes_toclient' in suricata_df.columns:
-                features['Total Length of Bwd Packets'] = suricata_df['flow.bytes_toclient']
-            
+                features['Total Length of Bwd Packets'] = pd.to_numeric(suricata_df['flow.bytes_toclient'], errors='coerce')
+
             # Calculate packet size statistics
             if 'Total Fwd Packets' in features.columns and 'Total Length of Fwd Packets' in features.columns:
                 with np.errstate(divide='ignore', invalid='ignore'):
@@ -583,7 +427,7 @@ class NetworkTrafficPipeline:
                 features['Attack Type'] = 'UNKNOWN'  # Will be set by traffic profile later
             
             # Ensure all required features exist (set to 0 if not calculated)
-            for feature in ordered_features:
+            for feature in ordered:
                 if feature not in features.columns:
                     features[feature] = 0
             
@@ -597,7 +441,7 @@ class NetworkTrafficPipeline:
             features.fillna(0, inplace=True)
             
             # Return DataFrame with columns in the exact specified order
-            return features[ordered_features]
+            return features
             
         except Exception as e:
             logger.error(f"Error transforming features: {e}")
@@ -606,109 +450,56 @@ class NetworkTrafficPipeline:
 
 
     def run_pipeline(self, profiles=None):
-        """
-        Run the complete traffic simulation and feature extraction pipeline
-        
-        Parameters:
-        profiles (list): List of traffic profiles to simulate
-        
-        Returns:
-        dict: Dictionary with results for each profile
-        """
-        if profiles is None:
-            profiles = ["normal", "dos", "ddos", "mixed"]
-            
+        profiles = profiles or ["normal", "dos", "ddos", "mixed"]
         results = {}
-        
-        
-        # Set up DPDK environment
-        if not self.setup_dpdk():
-            logger.error("Failed to set up DPDK environment. Exiting.")
-            return results
-        
         for profile in profiles:
-            logger.info(f"Running pipeline for {profile} traffic profile")
-            
-            # Generate traffic
-            pcap_file = self.generate_traffic(profile)
-            if not pcap_file:
-                logger.error(f"Failed to generate {profile} traffic. Skipping.")
+            logger.info("=== Running Linux DPDK pipeline for profile: %s ===", profile)
+            outdir = self.generate_and_analyze(profile)
+            if not outdir:
+                logger.error("Suricata/DPDK step failed for profile=%s", profile)
                 continue
-                
-            # Analyze with Suricata
-            suricata_output = self.analyze_with_suricata(pcap_file)
-            if not suricata_output:
-                logger.error(f"Failed to analyze {profile} traffic with Suricata. Skipping.")
-                continue
-            
-            
-            # Extract features
-            features_df = self.extract_features(suricata_output)
-            if features_df is not None:
-                # Store attack type internally but don't include in CSV output
-                features_df['Attack Type'] = profile.upper() if profile != "normal" else "BENIGN"
-                
-                # Save to results
+
+            feats = self.extract_features(outdir)
+            if feats is not None and not feats.empty:
+                feats['Attack Type'] = profile.upper() if profile != "normal" else "BENIGN"
                 results[profile] = {
-                    "pcap_file": pcap_file,
-                    "suricata_output": suricata_output,
-                    "features_df": features_df,
-                    "feature_count": len(features_df.columns),
-                    "flow_count": len(features_df)
+                    "suricata_output": outdir,
+                    "features_df": feats,
+                    "feature_count": len(feats.columns),
+                    "flow_count": len(feats)
                 }
-                
-                logger.info(f"Pipeline complete for {profile} profile: {len(features_df)} flows with {len(features_df.columns)} features")
+                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                fout = os.path.join(self.config["output_dir"], f"extracted_features_{profile}_{ts}.csv")
+                feats.to_csv(fout, index=False)
+                logger.info("Saved features to %s", fout)
         return results
 
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Network Traffic Simulation and Feature Extraction Pipeline')
-    parser.add_argument('--config', type=str, help='Path to configuration file')
-    parser.add_argument('--profiles', type=str, help='Comma-separated list of traffic profiles to simulate')
-    parser.add_argument('--output', type=str, help='Output directory for results')
-    parser.add_argument('--time', type=int, help='Simulation time in seconds')
-    parser.add_argument('--interface', type=str, help='Network interface to use')
-    
+    parser = argparse.ArgumentParser(description='Linux DPDK + Suricata pipeline')
+    parser.add_argument('--config', type=str, help='JSON config path')
+    parser.add_argument('--profiles', type=str, help='Comma-separated profiles')
     args = parser.parse_args()
-    
-    # Build configuration
-    config = {}
+
+    cfg = {}
     if args.config:
-        with open(args.config, 'r') as f:
-            config = json.load(f)
-    
-    if args.output:
-        config['output_dir'] = args.output
-    
-    if args.time:
-        config['simulation_time'] = args.time
-    
-    if args.interface:
-        config['interface'] = args.interface
-    
-    # Create and run pipeline
-    pipeline = NetworkTrafficPipeline(config)
-    
-    profiles = None
-    if args.profiles:
-        profiles = [p.strip() for p in args.profiles.split(',')]
-    
+        with open(args.config) as f:
+            cfg = json.load(f)
+
+    pipeline = NetworkTrafficPipeline(cfg)
+    profiles = [p.strip() for p in args.profiles.split(',')] if args.profiles else None
     results = pipeline.run_pipeline(profiles)
-    
-    # Combine all features into one dataset
+
     if results:
-        all_features = []
-        for profile, result in results.items():
-            if 'features_df' in result:
-                all_features.append(result['features_df'])
-        
-        if all_features:
-            combined_df = pd.concat(all_features, ignore_index=True)
-            output_path = os.path.join(config.get('output_dir', './output'), 'combined_features.csv')
-            combined_df.to_csv(output_path, index=False)
-            logger.info(f"Combined features saved to {output_path}")
-    
-    logger.info("Pipeline execution completed")
+        all_feats = [r["features_df"] for r in results.values() if "features_df" in r]
+        if all_feats:
+            combined = pd.concat(all_feats, ignore_index=True)
+            out = os.path.join(pipeline.config["output_dir"], "combined_features.csv")
+            combined.to_csv(out, index=False)
+            logger.info("Combined features saved to %s", out)
+    logger.info("Pipeline complete.")
+
 
 if __name__ == "__main__":
     main()

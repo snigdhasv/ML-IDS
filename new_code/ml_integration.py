@@ -1,36 +1,43 @@
+import os
 import joblib
 import pandas as pd
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, col
 from kafka import KafkaConsumer
 import json
+import logging
 
-# Load the model
-model_path = 'intrusion_detection_model.joblib'
-model = joblib.load(model_path)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("Kafka-ML")
 
-# Extract feature names from the model
-feature_names = model.feature_names_in_
+KAFKA_BROKERS = os.getenv("KAFKA_BROKERS", "127.0.0.1:9092")
+TOPIC = os.getenv("KAFKA_TOPIC", "network-traffic")
+MODEL_PATH = os.getenv("MODEL_PATH", "intrusion_detection_model.joblib")
 
-# Initialize Spark session
-spark = SparkSession.builder.appName("KafkaMLIntegration").getOrCreate()
+model = joblib.load(MODEL_PATH)
+feature_names = list(getattr(model, "feature_names_in_", []))
 
-# Set up Kafka consumer
 consumer = KafkaConsumer(
-    'network-traffic',
-    bootstrap_servers='127.0.0.1:9092',
-    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+    TOPIC,
+    bootstrap_servers=KAFKA_BROKERS.split(","),
+    value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+    auto_offset_reset="latest",
+    enable_auto_commit=True,
 )
 
 for message in consumer:
     traffic_data = message.value
-    print("Received traffic data:", traffic_data)
+    logger.info("Received traffic data (profile=%s)", traffic_data.get("profile"))
+    # Build DF matching model features; fill missing with 0
+    if feature_names:
+        row = {k: traffic_data.get(k, 0) for k in feature_names}
+        traffic_df = pd.DataFrame([row], columns=feature_names)
+    else:
+        # Fallback (not ideal, but avoids crash)
+        traffic_df = pd.DataFrame([traffic_data]).select_dtypes(include="number").fillna(0)
 
-    # Convert to DataFrame with proper feature names
-    traffic_df = pd.DataFrame([traffic_data], columns=feature_names)
-
-    # Make predictions
-    prediction = model.predict(traffic_df)
-    print("Prediction:", prediction)
+    try:
+        pred = model.predict(traffic_df)
+        logger.info("Prediction: %s", pred)
+    except Exception as e:
+        logger.error("Prediction failed: %s", e)
 
 consumer.close()

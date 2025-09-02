@@ -1,0 +1,45 @@
+%YAML 1.1
+---
+
+# Only the relevant bits shown; keep your normal Suricata config (outputs, eve, etc.)
+vars:
+  address-groups:
+    HOME_NET: "[192.168.0.0/16]"
+    EXTERNAL_NET: "any"
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      types: [ flow, alert, stats ]
+
+# Enable DPDK capture
+dpdk:
+  enabled: yes
+  # Map DPDK ports
+  # The numeric port IDs here correspond to order of EAL -w assignments; adjust as needed
+  interfaces:
+    - id: 0
+      name: dpdk0
+      description: "RX/TX port 0"
+      queues: 2
+    - id: 1
+      name: dpdk1
+      description: "RX/TX port 1"
+      queues: 2
+  # Optional tuning
+  rss: [ ipv4, tcp, udp ]
+  mempool-size: 2048
+  tpacket-v3: no
+  checksum-checks: yes
+  # Runmodes and workers
+threading:
+  set-cpu-affinity: yes
+  cpu-affinity:
+    - management-cpu-set:
+        cpu: [ 0 ]
+    - receive-cpu-set:
+        cpu: [ 1 ]
+    - worker-cpu-set:
+        cpu: [ 2,3 ]
