@@ -35,6 +35,14 @@ def run_traffic_simulation():
     traffic_pipeline = NetworkTrafficPipeline(config={
         "output_dir": "./output",
         "simulation_time": int(os.getenv("SIM_TIME", "60")),
+        # Point to the Suricata binary we installed from source
+        "suricata_binary": "/usr/local/bin/suricata",
+        # Use the local Pktgen-DPDK build directory
+        "pktgen_dir": "/home/ifscr/SE_02_2025/ML-IDS/new_code/Pktgen-DPDK",
+        # On this machine, NIC is Realtek (no native DPDK PMD); avoid binding attempts
+        "dpdk_bind": False,
+        # Avoid passing any -w PCI devices to pktgen
+        "pci_devs": []
         # set your PCI/NICs in a JSON config file or env if needed
     })
     results = traffic_pipeline.run_pipeline(["normal", "dos", "ddos", "mixed"])

@@ -148,8 +148,11 @@ class NetworkTrafficPipeline:
 
         pktgen_bin = os.path.join(self.config["pktgen_dir"], "app/x86_64-native-linuxapp-gcc/pktgen")
         if not os.path.exists(pktgen_bin):
-            # Alternative Meson path
+            # Alternative Meson path (common name 'builddir')
             pktgen_bin = os.path.join(self.config["pktgen_dir"], "builddir/app/pktgen")
+        if not os.path.exists(pktgen_bin):
+            # Alternative Meson path used in this project ('build')
+            pktgen_bin = os.path.join(self.config["pktgen_dir"], "build/app/pktgen")
         if not os.path.exists(pktgen_bin):
             raise FileNotFoundError("Pktgen binary not found. Build Pktgen and update pktgen_dir.")
 

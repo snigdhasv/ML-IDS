@@ -19581,3 +19581,369 @@
 2025-04-09 14:37:43,391 - Traffic-Simulation-Kafka - INFO - Streaming 115 feature records from mixed to Kafka...
 2025-04-09 14:37:45,297 - kafka.producer.kafka - INFO - Closing the Kafka producer with 0 secs timeout.
 2025-04-09 14:37:45,369 - kafka.producer.kafka - INFO - Proceeding to force close the producer since pending requests could not be completed within timeout 0.
+2025-09-03 13:59:26,684 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 13:59:26,691 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 13:59:26,691 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:01:43,948 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 14:01:43,951 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 14:01:43,951 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:01:43,952 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 14:01:43,952 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:03:19,966 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 14:03:19,968 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 14:03:19,969 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:03:19,970 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 14:03:19,970 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:03:22,974 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:03:22,976 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 14:04:23,031 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:04:23,032 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 14:04:23,032 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 14:04:23,032 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:04:26,036 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:04:26,038 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 14:05:26,052 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:05:26,053 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 14:05:26,053 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 14:05:26,054 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:05:29,058 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:05:29,059 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 14:06:29,079 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:06:29,079 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 14:06:29,079 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 14:06:29,080 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:06:32,084 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:06:32,086 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 14:07:32,122 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:07:32,123 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 14:22:14,884 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 14:22:14,886 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 14:22:14,886 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:22:14,887 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 14:22:14,888 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:22:17,892 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:22:17,892 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 14:23:17,947 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:23:17,948 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 14:23:17,948 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 14:23:17,949 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:23:20,952 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:23:20,953 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 14:24:21,000 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:24:21,000 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 14:24:21,000 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 14:24:21,001 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:24:24,006 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:24:24,007 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 14:25:24,067 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:25:24,068 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 14:25:24,068 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 14:25:24,068 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:25:27,071 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:25:27,073 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 14:26:27,134 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:26:27,134 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 14:37:33,896 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 14:37:33,898 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 14:37:33,898 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:37:33,899 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 14:37:33,900 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:37:36,903 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:37:36,904 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 14:38:36,957 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:38:36,958 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 14:38:36,958 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 14:38:36,958 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:38:39,961 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:38:39,962 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 14:39:40,022 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:39:40,023 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 14:39:40,024 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 14:39:40,025 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:39:43,029 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:39:43,031 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 14:40:43,092 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:40:43,093 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 14:40:43,093 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 14:40:43,094 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:40:46,098 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:40:46,100 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 14:41:46,134 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:41:46,135 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 14:45:36,999 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 14:45:37,000 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 14:45:37,000 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:45:37,001 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 14:45:37,002 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:45:40,005 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:45:40,006 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 14:46:40,015 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:46:40,016 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 14:46:40,017 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 14:46:40,017 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:46:43,021 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:46:43,022 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 14:47:43,082 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:47:43,083 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 14:47:43,084 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 14:47:43,084 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:47:46,090 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:47:46,092 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 14:48:46,140 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:48:46,141 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 14:48:46,141 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 14:48:46,141 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:48:49,144 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:48:49,145 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 14:49:49,198 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:49:49,199 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 14:50:39,288 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 14:50:39,289 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 14:50:39,290 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:50:39,291 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 14:50:39,291 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:50:42,295 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:50:42,296 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 14:51:42,357 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:51:42,357 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 14:51:42,358 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 14:51:42,359 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:51:45,363 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:51:45,365 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 14:52:45,393 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:52:45,394 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 14:52:45,395 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 14:52:45,395 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:52:48,400 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:52:48,400 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 14:53:48,460 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:53:48,461 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 14:53:48,461 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 14:53:48,461 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:53:51,465 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:53:51,466 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 14:54:51,476 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:54:51,476 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 14:56:38,120 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 14:56:38,122 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 14:56:38,122 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 14:56:38,124 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 14:56:38,124 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:56:41,128 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:56:41,130 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 14:57:41,182 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:57:41,183 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 14:57:41,183 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 14:57:41,184 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:57:44,189 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:57:44,189 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 14:58:44,250 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:58:44,251 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 14:58:44,251 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 14:58:44,251 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:58:47,255 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:58:47,257 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 14:59:47,291 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 14:59:47,292 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 14:59:47,292 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 14:59:47,293 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 14:59:50,297 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 14:59:50,299 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 15:00:50,320 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:00:50,321 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 15:20:52,351 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 15:20:52,352 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 15:20:52,353 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 15:20:52,354 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 15:20:52,354 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:20:55,358 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:20:55,358 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 15:21:55,408 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:21:55,409 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 15:21:55,409 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 15:21:55,410 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:21:58,414 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:21:58,416 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 15:22:58,450 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:22:58,450 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 15:22:58,450 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 15:22:58,451 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:23:01,454 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:23:01,456 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 15:24:01,516 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:24:01,517 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 15:24:01,517 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 15:24:01,517 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:24:04,520 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:24:04,521 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 15:25:04,580 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:25:04,581 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 15:25:50,795 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 15:25:50,796 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 15:25:50,797 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 15:25:50,798 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 15:25:50,798 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:25:53,801 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:25:53,803 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 15:26:53,861 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:26:53,862 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 15:26:53,862 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 15:26:53,862 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:26:56,865 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:26:56,867 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 15:27:56,877 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:27:56,878 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 15:27:56,878 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 15:27:56,879 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:27:59,881 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:27:59,883 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 15:28:59,943 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:28:59,944 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 15:28:59,944 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 15:28:59,944 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:29:02,947 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:29:02,948 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 15:30:03,008 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:30:03,009 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-03 15:33:13,746 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 15:33:13,747 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 15:33:13,748 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 15:33:13,749 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 15:33:13,749 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:33:16,753 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:33:16,755 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 15:34:52,682 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-03 15:34:52,683 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-03 15:34:52,684 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-03 15:34:52,685 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-03 15:34:52,685 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:34:55,688 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:34:55,690 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-03 15:35:55,726 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:35:55,726 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-03 15:35:55,726 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-03 15:35:55,726 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:35:58,729 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:35:58,730 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-03 15:36:58,791 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:36:58,791 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-03 15:36:58,792 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-03 15:36:58,793 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:37:01,797 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:37:01,798 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-03 15:38:01,854 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:38:01,854 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-03 15:38:01,855 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-03 15:38:01,855 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-03 15:38:04,860 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-03 15:38:04,862 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-03 15:39:04,867 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-03 15:39:04,868 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-18 13:19:44,858 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-18 13:19:44,866 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-18 13:19:44,866 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-18 13:19:44,867 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-18 13:19:44,867 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:19:47,871 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:19:47,874 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-18 13:20:47,935 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:20:47,936 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-18 13:20:47,936 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-18 13:20:47,936 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:20:50,941 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:20:50,943 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-18 13:21:51,001 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:21:51,001 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-18 13:21:51,001 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-18 13:21:51,002 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:21:54,006 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:21:54,008 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-18 13:22:54,061 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:22:54,062 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-18 13:22:54,062 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-18 13:22:54,063 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:22:57,068 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:22:57,070 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-18 13:23:57,112 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:23:57,113 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-18 13:26:56,572 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-18 13:26:56,573 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-18 13:26:56,573 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-18 13:26:56,574 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-18 13:26:56,575 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:26:59,579 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:26:59,580 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-18 13:27:59,640 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:27:59,640 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-18 13:27:59,640 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-18 13:27:59,641 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:28:02,644 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:28:02,646 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-18 13:29:02,705 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:29:02,705 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-18 13:29:02,706 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-18 13:29:02,706 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:29:05,710 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:29:05,712 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-18 13:30:05,773 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:30:05,774 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-18 13:30:05,774 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-18 13:30:05,774 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:30:08,779 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:30:08,780 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-18 13:31:08,790 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:31:08,791 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-18 13:33:50,207 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-18 13:33:50,208 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-18 13:33:50,209 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-18 13:33:50,210 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-18 13:33:50,210 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:33:53,214 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:33:53,216 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-18 13:34:53,245 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:34:53,245 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-18 13:34:53,246 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-18 13:34:53,247 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:34:56,251 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:34:56,253 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-18 13:35:56,313 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:35:56,314 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-18 13:35:56,315 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-18 13:35:56,315 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:35:59,320 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:35:59,322 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-18 13:36:59,383 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:36:59,384 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-18 13:36:59,384 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-18 13:36:59,385 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:37:02,390 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:37:02,392 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-18 13:38:02,452 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:38:02,453 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
+2025-09-18 13:41:07,322 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2025-09-18 13:41:07,323 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <checking_api_versions_recv> [IPv4 ('127.0.0.1', 9092)]>: Broker version identified as 2.6
+2025-09-18 13:41:07,323 - kafka.conn - INFO - <BrokerConnection client_id=kafka-python-producer-1, node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2025-09-18 13:41:07,324 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: normal ===
+2025-09-18 13:41:07,325 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:41:10,328 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:41:10,330 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=normal
+2025-09-18 13:42:10,368 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:42:10,368 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=normal
+2025-09-18 13:42:10,368 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: dos ===
+2025-09-18 13:42:10,369 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:42:13,372 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:42:13,374 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=dos
+2025-09-18 13:43:13,435 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:43:13,436 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=dos
+2025-09-18 13:43:13,437 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: ddos ===
+2025-09-18 13:43:13,437 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:43:16,442 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:43:16,444 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=ddos
+2025-09-18 13:44:16,492 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:44:16,493 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=ddos
+2025-09-18 13:44:16,493 - TrafficPipelineLinux - INFO - === Running Linux DPDK pipeline for profile: mixed ===
+2025-09-18 13:44:16,494 - TrafficPipelineLinux - INFO - Launching Suricata-DPDK…
+2025-09-18 13:44:19,499 - TrafficPipelineLinux - INFO - Launching Pktgen-DPDK…
+2025-09-18 13:44:19,501 - TrafficPipelineLinux - INFO - Traffic running via Pktgen; profile=mixed
+2025-09-18 13:45:19,549 - TrafficPipelineLinux - ERROR - No eve.json generated; check Suricata logs/output.
+2025-09-18 13:45:19,550 - TrafficPipelineLinux - ERROR - Suricata/DPDK step failed for profile=mixed
