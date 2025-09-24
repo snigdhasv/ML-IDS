@@ -6,6 +6,8 @@ from kafka import KafkaConsumer
 import json
 import logging
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -16,6 +18,29 @@ KAFKA_BROKERS = os.getenv("KAFKA_BROKERS", "127.0.0.1:9092")
 TOPIC = os.getenv("KAFKA_TOPIC", "network-traffic")
 MODEL1_PATH = os.getenv("MODEL1_PATH", "rf_model_2017.joblib")  # RF(2017)
 MODEL2_PATH = os.getenv("MODEL2_PATH", "lgb_model_2018.joblib")  # LGB(2018)
+PCA_TRANSFORMER_PATH = os.getenv("PCA_TRANSFORMER_PATH", "pca_transformer.joblib")  # PCA transformer
+SCALER_PATH = os.getenv("SCALER_PATH", "scaler.joblib")  # StandardScaler
+
+# Define the expected CICIDS features in order
+CICIDS_FEATURES = [
+    'Destination Port', 'Flow Duration', 'Total Fwd Packets', 'Total Backward Packets',
+    'Total Length of Fwd Packets', 'Total Length of Bwd Packets', 'Fwd Packet Length Max',
+    'Fwd Packet Length Min', 'Fwd Packet Length Mean', 'Fwd Packet Length Std',
+    'Bwd Packet Length Max', 'Bwd Packet Length Min', 'Bwd Packet Length Mean',
+    'Bwd Packet Length Std', 'Flow Bytes/s', 'Flow Packets/s', 'Flow IAT Mean',
+    'Flow IAT Std', 'Flow IAT Max', 'Flow IAT Min', 'Fwd IAT Total', 'Fwd IAT Mean',
+    'Fwd IAT Std', 'Fwd IAT Max', 'Fwd IAT Min', 'Bwd IAT Total', 'Bwd IAT Mean',
+    'Bwd IAT Std', 'Bwd IAT Max', 'Bwd IAT Min', 'Fwd PSH Flags', 'Fwd URG Flags',
+    'Fwd Header Length', 'Bwd Header Length', 'Fwd Packets/s', 'Bwd Packets/s',
+    'Min Packet Length', 'Max Packet Length', 'Packet Length Mean', 'Packet Length Std',
+    'Packet Length Variance', 'FIN Flag Count', 'RST Flag Count', 'PSH Flag Count',
+    'ACK Flag Count', 'URG Flag Count', 'ECE Flag Count', 'Down/Up Ratio',
+    'Average Packet Size', 'Avg Fwd Segment Size', 'Avg Bwd Segment Size',
+    'Subflow Fwd Bytes', 'Subflow Bwd Bytes', 'Init_Win_bytes_forward',
+    'Init_Win_bytes_backward', 'act_data_pkt_fwd', 'min_seg_size_forward',
+    'Active Mean', 'Active Std', 'Active Max', 'Active Min', 'Idle Mean',
+    'Idle Std', 'Idle Max', 'Idle Min'
+]
 
 class AdaptiveEnsemblePredictor:
     """Adaptive ensemble prediction with confidence-based weighting"""
@@ -105,7 +130,7 @@ class AdaptiveEnsemblePredictor:
         Enhanced ensemble prediction with adaptive weighting strategies
         
         Parameters:
-        - X_input: Input features for prediction
+        - X_input: Input features for prediction (should be PCA features)
         - model1, model2: Trained models (RF and LGB)
         - method: 'average', 'confidence_adaptive'
         - confidence_metric: 'max_prob', 'entropy', 'margin', 'gini'
@@ -165,17 +190,18 @@ class AdaptiveEnsemblePredictor:
             return None, None, None
 
 class EnsembleKafkaMLProcessor:
-    """Kafka ML processor using adaptive ensemble methods"""
+    """Kafka ML processor using adaptive ensemble methods with PCA feature transformation"""
     
     def __init__(self):
         self.ensemble_predictor = AdaptiveEnsemblePredictor()
         self.model1 = None  # RF(2017)
         self.model2 = None  # LGB(2018)
-        self.feature_names = None
+        self.pca_transformer = None
+        self.scaler = None
         self.consumer = None
         
     def load_models(self):
-        """Load both models for ensemble"""
+        """Load both models and feature transformers for ensemble"""
         try:
             logger.info("Loading RF(2017) model from %s", MODEL1_PATH)
             self.model1 = joblib.load(MODEL1_PATH)
@@ -183,17 +209,23 @@ class EnsembleKafkaMLProcessor:
             logger.info("Loading LGB(2018) model from %s", MODEL2_PATH)
             self.model2 = joblib.load(MODEL2_PATH)
             
-            # Get feature names (preferably from one of the models)
-            if hasattr(self.model1, "feature_names_in_"):
-                self.feature_names = list(self.model1.feature_names_in_)
-            elif hasattr(self.model2, "feature_names_in_"):
-                self.feature_names = list(self.model2.feature_names_in_)
-            else:
-                logger.warning("No feature names found in models")
-                self.feature_names = []
+            # Try to load PCA transformer and scaler
+            try:
+                logger.info("Loading PCA transformer from %s", PCA_TRANSFORMER_PATH)
+                self.pca_transformer = joblib.load(PCA_TRANSFORMER_PATH)
+            except FileNotFoundError:
+                logger.warning("PCA transformer not found. Will create synthetic PCA transformation.")
+                self.pca_transformer = None
+                
+            try:
+                logger.info("Loading StandardScaler from %s", SCALER_PATH)
+                self.scaler = joblib.load(SCALER_PATH)
+            except FileNotFoundError:
+                logger.warning("StandardScaler not found. Will create synthetic scaling.")
+                self.scaler = None
             
             logger.info("Models loaded successfully. RF classes: %s, LGB classes: %s", 
-                       len(self.model1.classes_), len(self.model2.classes_))
+                       self.model1.classes_, self.model2.classes_)
             return True
             
         except Exception as e:
@@ -216,30 +248,63 @@ class EnsembleKafkaMLProcessor:
             logger.error("Failed to setup Kafka consumer: %s", e)
             return False
     
-    def prepare_data(self, traffic_data):
-        """Prepare data for model prediction"""
+    def transform_to_pca_features(self, traffic_data):
+        """Transform raw CICIDS features to PCA features"""
         try:
-            if self.feature_names:
-                # Build DataFrame matching model features; fill missing with 0
-                row = {k: traffic_data.get(k, 0) for k in self.feature_names}
-                traffic_df = pd.DataFrame([row], columns=self.feature_names)
-            else:
-                # Fallback - use all numeric features
-                traffic_df = pd.DataFrame([traffic_data]).select_dtypes(include="number").fillna(0)
+            # Create DataFrame with all expected features
+            feature_row = {}
+            for feature in CICIDS_FEATURES:
+                feature_row[feature] = traffic_data.get(feature, 0)
             
-            logger.debug("Prepared data shape: %s", traffic_df.shape)
-            return traffic_df
+            df = pd.DataFrame([feature_row])
+            
+            if self.pca_transformer is not None and self.scaler is not None:
+                # Use the actual PCA transformer from training
+                scaled_data = self.scaler.transform(df)
+                pca_features = self.pca_transformer.transform(scaled_data)
+                
+                # Create DataFrame with PCA feature names
+                pca_columns = [f'PC{i+1}' for i in range(pca_features.shape[1])]
+                pca_df = pd.DataFrame(pca_features, columns=pca_columns)
+                
+                logger.debug("Used actual PCA transformer: %s features -> %s components", 
+                           len(CICIDS_FEATURES), pca_features.shape[1])
+                
+            else:
+                # Create synthetic PCA transformation (fallback)
+                logger.warning("Using synthetic PCA transformation - predictions may not be accurate")
+                
+                # Simple synthetic PCA: use weighted combinations of original features
+                synthetic_pca_data = []
+                
+                # Create 34 synthetic principal components
+                for pc_idx in range(34):
+                    # Use different combinations for each PC
+                    pc_value = 0
+                    for i, feature in enumerate(CICIDS_FEATURES[:34]):  # Use first 34 features
+                        weight = np.sin(pc_idx + i) * 0.1  # Synthetic weight
+                        pc_value += traffic_data.get(feature, 0) * weight
+                    synthetic_pca_data.append(pc_value)
+                
+                # Create PCA DataFrame
+                pca_columns = [f'PC{i+1}' for i in range(34)]
+                pca_df = pd.DataFrame([synthetic_pca_data], columns=pca_columns)
+                
+                logger.debug("Used synthetic PCA transformation: %s features -> 34 components", 
+                           len(CICIDS_FEATURES))
+            
+            return pca_df
             
         except Exception as e:
-            logger.error("Data preparation failed: %s", e)
+            logger.error("PCA transformation failed: %s", e)
             return None
     
-    def make_ensemble_prediction(self, traffic_df, method='confidence_adaptive', 
+    def make_ensemble_prediction(self, pca_df, method='confidence_adaptive', 
                                 confidence_metric='max_prob'):
-        """Make prediction using adaptive ensemble"""
+        """Make prediction using adaptive ensemble on PCA features"""
         try:
             predictions, confidence_scores, weights = self.ensemble_predictor.predict_ensemble(
-                traffic_df, self.model1, self.model2, 
+                pca_df, self.model1, self.model2, 
                 method=method, confidence_metric=confidence_metric
             )
             
@@ -270,15 +335,17 @@ class EnsembleKafkaMLProcessor:
             return
         
         logger.info("Starting ensemble prediction service...")
+        logger.info("Expected input features: %s", ', '.join(CICIDS_FEATURES[:10]) + "...")
         
         try:
             for message in self.consumer:
                 traffic_data = message.value
                 logger.info("Received traffic data (profile=%s)", traffic_data.get("profile"))
                 
-                # Prepare data
-                traffic_df = self.prepare_data(traffic_data)
-                if traffic_df is None:
+                # Transform raw features to PCA
+                pca_df = self.transform_to_pca_features(traffic_data)
+                if pca_df is None:
+                    logger.error("Failed to transform features to PCA")
                     continue
                 
                 # Make ensemble prediction with different methods
@@ -291,7 +358,7 @@ class EnsembleKafkaMLProcessor:
                 results = {}
                 for method, conf_metric in methods_to_try:
                     result = self.make_ensemble_prediction(
-                        traffic_df, method=method, confidence_metric=conf_metric
+                        pca_df, method=method, confidence_metric=conf_metric
                     )
                     if result:
                         results[f"{method}_{conf_metric}"] = result
@@ -308,8 +375,6 @@ class EnsembleKafkaMLProcessor:
                     primary_result = results.get('confidence_adaptive_max_prob', 
                                                list(results.values())[0])
                     
-                    # You can add logic here to send results to another Kafka topic,
-                    # database, or alerting system
                     self.handle_prediction_result(traffic_data, primary_result, results)
                 else:
                     logger.error("All ensemble prediction methods failed")
@@ -332,12 +397,7 @@ class EnsembleKafkaMLProcessor:
             logger.warning("  Confidence: %.3f", primary_result['confidence'])
             logger.warning("  Model weights - RF: %.3f, LGB: %.3f", 
                           primary_result['rf_weight'], primary_result['lgb_weight'])
-        
-        # Example: You could send results to another Kafka topic
-        # self.send_to_alerts_topic(original_data, primary_result)
-        
-        # Example: Store in database
-        # self.store_prediction(original_data, primary_result, all_results)
+            logger.warning("  Original profile: %s", original_data.get('profile', 'unknown'))
     
     def get_ensemble_statistics(self):
         """Get statistics about ensemble performance"""
